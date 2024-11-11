@@ -1,0 +1,47 @@
+profiles:
+  - name: Linux Clang 18
+    platform: Linux
+    commands: standard
+    setups: [qbs231_qt671_clang18]
+
+actions:
+  - name: Qbs Resolve Debug and Release
+    # note: this ensures that we can change the build settings
+    standard:
+      commands: >
+        rm -rf ./tmp/qbshello/debug/ ./tmp/qbshello/release &&
+        qbs resolve
+        --log-time
+        --build-directory ./tmp/qbshello
+        --file QbsHello.qbs
+        --force-probe-execution
+        modules.cpp.cxxStandardLibrary:libc++ modules.cpp.staticLibraries:c++,c++abi modules.cpp.linkerVariant:lld
+        modules.cpp.treatWarningsAsErrors:true
+        config:debug
+        config:release
+
+  - name: Build & Test QbsHello Debug
+    standard:
+      commands: >
+        qbs build
+        --keep-going
+        --log-time
+        --build-directory ./tmp/qbshello
+        --file QbsHello.qbs
+        --products autotest-runner
+        modules.cpp.cxxStandardLibrary:libc++ modules.cpp.staticLibraries:c++,c++abi modules.cpp.linkerVariant:lld
+        modules.cpp.treatWarningsAsErrors:true
+        config:debug
+
+  - name: Build & Test QbsHello Release
+    standard:
+      commands: >
+        qbs build
+        --keep-going
+        --log-time
+        --build-directory ./tmp/qbshello
+        --file QbsHello.qbs
+        --products autotest-runner
+        modules.cpp.cxxStandardLibrary:libc++ modules.cpp.staticLibraries:c++,c++abi modules.cpp.linkerVariant:lld
+        modules.cpp.treatWarningsAsErrors:true
+        config:release
